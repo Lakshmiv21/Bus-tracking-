@@ -2,12 +2,225 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RouteWise - Smart Transit</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RouteWise | Smart Transit</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Arial,sans-serif;background:#f3f6fc;color:#17243a}
+header{background:#102d55;color:white;padding:20px}
+.brand{font-size:25px;font-weight:bold}
+.brand span{color:#55c5ff}
+header p{font-size:13px;margin-top:6px;color:#cbdcf1}
+.container{max-width:850px;margin:auto;padding:18px}
+.modes{display:flex;gap:10px;margin-bottom:20px}
+.modes button{flex:1;padding:13px;border:1px solid #d5dfec;border-radius:10px;background:white;font-weight:bold;color:#29415e}
+.modes button.active{background:#1769d2;color:white;border-color:#1769d2}
+h2{font-size:21px;margin-bottom:8px}
+.sub{color:#738198;font-size:13px;margin-bottom:17px}
+.card{background:white;padding:18px;border-radius:15px;margin-bottom:15px;box-shadow:0 3px 15px #17243a0c}
+label{display:block;font-size:13px;font-weight:bold;margin:12px 0 7px}
+input,select{width:100%;padding:13px;border:1px solid #d9e1ec;border-radius:9px;font-size:15px;background:white}
+.primary{width:100%;padding:14px;background:#1769d2;color:white;border:0;border-radius:9px;font-size:15px;font-weight:bold;margin-top:14px}
+.bus{border:1px solid #e4eaf2;border-radius:11px;padding:14px;margin-top:12px}
+.bus-top{display:flex;justify-content:space-between;gap:8px}
+.bus-name{font-weight:bold;font-size:16px}
+.small{font-size:12px;color:#78869a;margin-top:5px}
+.pill{font-size:11px;padding:6px 9px;border-radius:20px;background:#e0f6e9;color:#137b43;height:fit-content}
+.warning{background:#fff1d8;color:#a65d00}
+.time{font-size:27px;font-weight:bold;color:#1769d2;margin-top:12px}
+.info{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:15px}
+.info div{background:#f1f6fc;padding:12px;border-radius:9px}
+.info strong{display:block;margin-top:7px;font-size:15px}
+.section-title{font-size:16px;font-weight:bold;margin-bottom:12px}
+.map{height:180px;border-radius:12px;background:#e3edf1;position:relative;overflow:hidden;margin-top:12px}
+.road{position:absolute;background:#fff;border:1px solid #d4dfe2;height:17px;width:130%;transform:rotate(-25deg);top:75px;left:-15%}
+.road.two{transform:rotate(35deg);top:100px}
+.road.three{transform:rotate(80deg);top:20px;left:40%}
+.map-label{position:absolute;top:13px;left:13px;background:white;padding:7px 10px;border-radius:7px;font-size:11px}
+.pin{position:absolute;top:68px;left:57%;font-size:26px}
+.driver{display:none}
+.notice{font-size:12px;color:#75839a;text-align:center;padding:10px}
+footer{text-align:center;color:#8b98aa;font-size:12px;padding:20px}
+</style>
 </head>
 <body>
-    <h1>Welcome to RouteWise!</h1>
-    <p>Smart Transit - Intelligent Passenger Assistance System</p>
+
+<header>
+ <div class="brand">🚌 Route<span>Wise</span></div>
+ <p>Smart Transit – Intelligent Passenger Assistance</p>
+</header>
+
+<main class="container">
+
+ <div class="modes">
+  <button id="passengerBtn" class="active" onclick="showMode('passenger')">👤 Passenger</button>
+  <button id="driverBtn" onclick="showMode('driver')">🚌 Driver</button>
+ </div>
+
+ <section id="passenger">
+
+  <h2>Where are you going?</h2>
+  <p class="sub">Find your bus and avoid unnecessary waiting.</p>
+
+  <div class="card">
+   <label>Starting location</label>
+   <input id="from" placeholder="Enter your bus stop">
+   <label>Destination</label>
+   <input id="to" placeholder="Where do you want to go?">
+   <button class="primary" onclick="searchBus()">Search buses →</button>
+  </div>
+
+  <div class="card">
+   <div class="section-title">📍 Live Bus Tracking</div>
+   <p class="small">Example map preview – live GPS integration comes next.</p>
+   <div class="map">
+    <div class="map-label">Bus route preview</div>
+    <div class="road"></div>
+    <div class="road two"></div>
+    <div class="road three"></div>
+    <div class="pin">🚌</div>
+   </div>
+  </div>
+
+  <div class="card">
+   <div class="section-title">Available buses</div>
+
+   <div id="busList">
+    <div class="bus">
+     <div class="bus-top">
+      <div>
+       <div class="bus-name">Bus 101 – City Express</div>
+       <p class="small">Central Station → City Centre</p>
+      </div>
+      <span class="pill">On time</span>
+     </div>
+     <div class="time">8 min</div>
+     <p class="small">Example estimated arrival</p>
+     <div class="info">
+      <div>Passenger crowd<strong>🟢 Low</strong></div>
+      <div>Bus status<strong>On route</strong></div>
+     </div>
+    </div>
+
+    <div class="bus">
+     <div class="bus-top">
+      <div>
+       <div class="bus-name">Bus 205 – Metro Link</div>
+       <p class="small">Central Station → Metro</p>
+      </div>
+      <span class="pill warning">Delayed</span>
+     </div>
+     <div class="time">15 min</div>
+     <p class="small">Example estimated arrival</p>
+     <div class="info">
+      <div>Passenger crowd<strong>🟡 Medium</strong></div>
+      <div>Delay reason<strong>Traffic (demo)</strong></div>
+     </div>
+    </div>
+   </div>
+  </div>
+
+  <div class="card">
+   <div class="section-title">🔔 Passenger Assistance</div>
+   <p class="small">Get help with delays, boarding and alternative buses.</p>
+   <div class="info">
+    <div>Boarding prediction<strong>Coming soon</strong></div>
+    <div>Alternative routes<strong>Coming soon</strong></div>
+    <div>Delay notifications<strong>Coming soon</strong></div>
+    <div>Route change alerts<strong>Coming soon</strong></div>
+   </div>
+  </div>
+ </section>
+
+ <section id="driver" class="driver">
+  <h2>Driver Dashboard</h2>
+  <p class="sub">Manage your bus trip from the same application.</p>
+
+  <div class="card">
+   <div class="section-title">🚍 Trip Management</div>
+   <label>Bus number</label>
+   <input id="busNumber" placeholder="Enter bus number">
+   <label>Route</label>
+   <input id="route" placeholder="Enter route name">
+   <button class="primary" id="tripBtn" onclick="toggleTrip()">Start Trip</button>
+   <p id="tripStatus" class="small">No active trip.</p>
+  </div>
+
+  <div class="card">
+   <div class="section-title">📢 Report a delay</div>
+   <label>Reason for delay</label>
+   <select id="delayReason">
+    <option>Heavy traffic</option>
+    <option>Vehicle breakdown</option>
+    <option>Road blockage</option>
+    <option>Emergency</option>
+    <option>Other</option>
+   </select>
+   <button class="primary" onclick="reportDelay()">Submit delay report</button>
+   <p id="reportStatus" class="small"></p>
+  </div>
+
+  <div class="card">
+   <div class="section-title">📍 GPS Sharing</div>
+   <p class="small">Location sharing will be enabled during an active trip after GPS integration.</p>
+   <p id="gpsStatus" class="small">GPS not connected yet.</p>
+  </div>
+ </section>
+
+ <p class="notice">Prototype preview • Sample bus information is not live data.</p>
+</main>
+
+<footer>RouteWise © 2026 | Smarter journeys, less waiting.</footer>
+
+<script>
+let activeTrip=false;
+
+function showMode(mode){
+ document.getElementById('passenger').style.display=
+ mode==='passenger'?'block':'none';
+ document.getElementById('driver').style.display=
+ mode==='driver'?'block':'none';
+ document.getElementById('passengerBtn').classList.toggle('active',mode==='passenger');
+ document.getElementById('driverBtn').classList.toggle('active',mode==='driver');
+}
+
+function searchBus(){
+ const from=document.getElementById('from').value.trim();
+ const to=document.getElementById('to').value.trim();
+ if(!from||!to){
+  alert('Please enter both starting location and destination.');
+  return;
+ }
+ alert('Route search for '+from+' to '+to+
+ '. Live route search will be connected in the next development stage.');
+}
+
+function toggleTrip(){
+ const bus=document.getElementById('busNumber').value.trim();
+ const route=document.getElementById('route').value.trim();
+ if(!activeTrip && (!bus||!route)){
+  alert('Please enter bus number and route first.');
+  return;
+ }
+ activeTrip=!activeTrip;
+ document.getElementById('tripBtn').textContent=
+ activeTrip?'End Trip':'Start Trip';
+ document.getElementById('tripStatus').textContent=
+ activeTrip?'Trip started for Bus '+bus+'.':'Trip ended.';
+ document.getElementById('gpsStatus').textContent=
+ activeTrip?'Trip active. GPS integration pending.':'GPS sharing stopped.';
+}
+
+function reportDelay(){
+ if(!activeTrip){
+  alert('Start your trip before reporting a delay.');
+  return;
+ }
+ document.getElementById('reportStatus').textContent=
+ 'Delay report prepared: '+document.getElementById('delayReason').value+
+ '. Backend connection pending.';
+}
+</script>
 </body>
 </html>
